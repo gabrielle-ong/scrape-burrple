@@ -8,4 +8,7 @@
 
 class TutorialPipeline(object):
     def process_item(self, item, spider):
+		with open('test.txt', 'w') as f:
+			f.write('some text', file=f)
+			
         return item
