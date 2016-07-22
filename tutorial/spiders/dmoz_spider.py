@@ -11,5 +11,4 @@ class DmozSpider(scrapy.Spider):
 		for sel in response.xpath('//div[re:test(@class, "categoriesList")]/div/div/ul/li'):
 			title = sel.xpath('a/text()').extract()
 			link = sel.xpath('a/@href').extract()
-			desc = sel.xpath('text()').extract()
-			print title, link, desc
+			print title
