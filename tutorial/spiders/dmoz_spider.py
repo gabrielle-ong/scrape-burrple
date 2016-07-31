@@ -8,7 +8,8 @@ class DmozSpider(scrapy.Spider):
     name = "dmoz"
     allowed_domains = ["www.burpple.com"]
     start_urls = [
-    "http://www.burpple.com/categories/sg"
+    "http://localhost:8000"
+    #"http://www.burpple.com/categories/sg"
     ]
     #rules = (Rule(SgmlLinkExtractor(allow=('')), callback='parse_categories',follow=True))
 	#rules = (Rule(SgmlLinkExtractor(allow=('')), callback='parse_categories',follow=True))
