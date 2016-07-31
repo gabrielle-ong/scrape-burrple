@@ -3,28 +3,38 @@ from scrapy.http import Request
 from tutorial.items import TutorialItem
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+from bs4 import BeautifulSoup
 
 class DmozSpider(scrapy.Spider):
     name = "dmoz"
     allowed_domains = ["www.burpple.com"]
     start_urls = [
-    "http://localhost:8000"
-    #"http://www.burpple.com/categories/sg"
+    #"http://localhost:8000"
+    "http://www.burpple.com/categories/sg"
     ]
-    #rules = (Rule(SgmlLinkExtractor(allow=('')), callback='parse_categories',follow=True))
-	#rules = (Rule(SgmlLinkExtractor(allow=('')), callback='parse_categories',follow=True))
-	
+    base_url = "http://www.burpple.com"
 
     def parse(self, response):
-		for sel in response.xpath('//div[re:test(@class, "categoriesList")]/div/div/ul/li'):
-			link = sel.xpath('a/@href').extract()
-			url = response.urljoin(link[0])
-			yield scrapy.Request(url,  callback = self.parse_categories)
-		# yield scrapy.Request("http://www.burpple.com",  callback = self.parse_categories)
+		soup = BeautifulSoup(response.body, 'html.parser')
+		result = soup.select(".categoriesList .clearfix a")
+		for record in result:
+			url = self.base_url + record['href']	#retrieve the href path and join the base url
+			return scrapy.Request(url,  callback = self.parse_categories)
 
     def parse_categories(self, response):
-    	with open('test.txt', 'a') as f:
-			f.write(str(response.url) + "\n")
+    	#find elements that contains topVenue-details for class
+    	soup = BeautifulSoup(response.body, 'html.parser')
+    	details = soup.select(".topVenue-details")
+    	for detail in details:
+    		detail_body = detail.select(".topVenue-details-info")
+    		for link in detail_body:
+    			found_link = link.find_all('a')[0]['href']
+    			url = self.base_url + found_link
+    			print url
+    			return
+    			#yield scrapy.Request(url, callback = self.parse_details)
+   #  	with open('test.txt', 'a') as f:
+			# f.write(str(response.url) + "\n")
     	# for x in range(0, 10):
     	# 	print "HAHSHSDHADHS"
     	#yield
@@ -45,3 +55,6 @@ class DmozSpider(scrapy.Spider):
 		# 	item ['model'] = model.xpath("a/text()")[0].extract()
 		# 	item ['model_link'] = url2
 		# 	yield item
+
+	def parse_details(self, response):
+		print response.body
