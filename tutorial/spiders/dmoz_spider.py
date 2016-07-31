@@ -6,35 +6,38 @@ from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from bs4 import BeautifulSoup
 
 class DmozSpider(scrapy.Spider):
-    name = "dmoz"
-    allowed_domains = ["www.burpple.com"]
-    start_urls = [
-    #"http://localhost:8000"
-    "http://www.burpple.com/categories/sg"
-    ]
-    base_url = "http://www.burpple.com"
+	name = "dmoz"
+	allowed_domains = ["www.burpple.com"]
+	start_urls = [
+	#"http://localhost:8000"
+	"http://www.burpple.com/categories/sg"
+	]
+	base_url = "http://www.burpple.com"
 
-    def parse(self, response):
+	def parse(self, response):
 		soup = BeautifulSoup(response.body, 'html.parser')
 		result = soup.select(".categoriesList .clearfix a")
 		for record in result:
 			url = self.base_url + record['href']	#retrieve the href path and join the base url
 			return scrapy.Request(url,  callback = self.parse_categories)
 
-    def parse_categories(self, response):
-    	#find elements that contains topVenue-details for class
-    	soup = BeautifulSoup(response.body, 'html.parser')
-    	details = soup.select(".topVenue-details")
-    	for detail in details:
-    		detail_body = detail.select(".topVenue-details-info")
-    		for link in detail_body:
-    			found_link = link.find_all('a')[0]['href']
-    			url = self.base_url + found_link
-    			print url
-    			return
-    			#yield scrapy.Request(url, callback = self.parse_details)
-   #  	with open('test.txt', 'a') as f:
-			# f.write(str(response.url) + "\n")
+	def parse_categories(self, response):
+		#find elements that contains topVenue-details for class
+		soup = BeautifulSoup(response.body, 'html.parser')
+		details = soup.select(".topVenue-details")
+		for detail in details:
+			detail_body = detail.select(".topVenue-details-info")
+			for link in detail_body:
+				found_link = link.find_all('a')[0]['href']
+				url = self.base_url + found_link
+				return scrapy.Request(url, callback = self.parse_details)
+
+	def parse_details(self, response):
+		soup = BeautifulSoup(response.body, 'html.parser')
+		address = soup.select(".venueInfo-details-header .venueInfo-details-header-item-header--address")
+		address = address[0].find_next_sibling().get_text(" ", strip=True)
+		with open('test.txt', 'a') as f:
+			f.write(str(address) + "\n")
     	# for x in range(0, 10):
     	# 	print "HAHSHSDHADHS"
     	#yield
@@ -56,5 +59,3 @@ class DmozSpider(scrapy.Spider):
 		# 	item ['model_link'] = url2
 		# 	yield item
 
-	def parse_details(self, response):
-		print response.body
