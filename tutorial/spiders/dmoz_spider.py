@@ -34,10 +34,12 @@ class DmozSpider(scrapy.Spider):
 
 	def parse_details(self, response):
 		soup = BeautifulSoup(response.body, 'html.parser')
+		title = soup.find("h1", class_="venueInfo-profile-header-text-name")
+		print title.get_text()
 		address = soup.select(".venueInfo-details-header .venueInfo-details-header-item-header--address")
 		address = address[0].find_next_sibling().get_text(" ", strip=True)
-		with open('test.txt', 'a') as f:
-			f.write(str(address) + "\n")
+		# with open('test.txt', 'a') as f:
+		# 	f.write(str(address) + "\n")
     	# for x in range(0, 10):
     	# 	print "HAHSHSDHADHS"
     	#yield
