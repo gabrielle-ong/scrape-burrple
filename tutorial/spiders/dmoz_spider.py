@@ -22,8 +22,10 @@ class DmozSpider(scrapy.Spider):
 		# yield scrapy.Request("http://www.burpple.com",  callback = self.parse_categories)
 
     def parse_categories(self, response):
-    	for x in range(0, 10):
-    		print "HAHSHSDHADHS"
+    	with open('test.txt', 'a') as f:
+			f.write(str(response.url) + "\n")
+    	# for x in range(0, 10):
+    	# 	print "HAHSHSDHADHS"
     	#yield
 
 		# links = response.selector.xpath('*')
