@@ -30,19 +30,16 @@ class DmozSpider(scrapy.Spider):
 			for link in detail_body:
 				found_link = link.find_all('a')[0]['href']
 				url = self.base_url + found_link
-				return scrapy.Request(url, callback = self.parse_details)
+				yield scrapy.Request(url, callback = self.parse_details)
 
 	def parse_details(self, response):
 		soup = BeautifulSoup(response.body, 'html.parser')
-		title = soup.find("h1", class_="venueInfo-profile-header-text-name")
-		print title.get_text()
+		title = soup.find("h1", class_="venueInfo-profile-header-text-name").get_text() #get title
 		address = soup.select(".venueInfo-details-header .venueInfo-details-header-item-header--address")
-		address = address[0].find_next_sibling().get_text(" ", strip=True)
+		address = address[0].find_next_sibling().get_text(" ", strip=True)	#get address
+		print address
 		# with open('test.txt', 'a') as f:
 		# 	f.write(str(address) + "\n")
-    	# for x in range(0, 10):
-    	# 	print "HAHSHSDHADHS"
-    	#yield
 
 		# links = response.selector.xpath('*')
 
